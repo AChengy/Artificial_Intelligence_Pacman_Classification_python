@@ -51,8 +51,8 @@ class PerceptronClassifier:
         self.features = trainingData[0].keys() # could be useful later
         # DO NOT ZERO OUT YOUR WEIGHTS BEFORE STARTING TRAINING, OR
         # THE AUTOGRADER WILL LIKELY DEDUCT POINTS.
-        print self.weights
-        print self.legalLabels
+        #print self.weights
+        #print self.legalLabels
         #print "features ", self.features
         #print "trainingData0: ",trainingData[0]
         for iteration in range(self.max_iterations):

@@ -14,6 +14,7 @@
 
 # Mira implementation
 import util
+import math
 PRINT = True
 
 class MiraClassifier:
@@ -61,7 +62,38 @@ class MiraClassifier:
         representing a vector of values.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        accuracy =0
+        weights_copy =self.weights
+
+        for Cvalue in Cgrid:
+            for iter in range(self.max_iterations):
+                print "Starting iteration ", iter, "..."
+                for iterator in range(len(trainingData)):
+                    instance = util.Counter()
+                    for label in self.legalLabels:
+                        instance[label] = weights_copy[label]*trainingData[iterator]
+                    estimate = instance.argMax()
+                    if(estimate == trainingLabels[iterator]):
+                        continue
+                    tau = (weights_copy[estimate]-weights_copy[trainingLabels[iterator]])*trainingData[iterator]+1.0
+                    tau = tau/((trainingData[iterator]*trainingData[iterator])*2) #couln't use math.pow() since I could cast as a float
+                    tau = min(tau,Cvalue)
+                    for feature in self.features:
+                        weights_copy[trainingLabels[iterator]][feature] = weights_copy[trainingLabels[iterator]][feature] + tau*trainingData[iterator][feature]
+                        weights_copy[estimate][feature] = weights_copy[estimate][feature] - tau*trainingData[iterator][feature]
+            mkg = self.classify(validationData)
+            temps = 0
+            for iterator in range(len(mkg)):
+                if(mkg[iterator]!=validationLabels[iterator]):
+                    continue
+                temps = temps +1
+            if(temps < accuracy):
+                continue
+            accuracy = temps
+
+
+
+        #util.raiseNotDefined()
 
     def classify(self, data ):
         """

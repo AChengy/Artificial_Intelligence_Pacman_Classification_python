@@ -24,6 +24,7 @@ import samples
 import sys
 import util
 from pacman import GameState
+import math
 
 TEST_SET_SIZE = 100
 DIGIT_DATUM_WIDTH=28
@@ -78,7 +79,14 @@ def enhancedFeatureExtractorDigit(datum):
     features =  basicFeatureExtractorDigit(datum)
 
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    for x in range(DIGIT_DATUM_WIDTH):
+        for y in range(DIGIT_DATUM_HEIGHT):
+            if datum.getPixel(x, y) > 0:
+                features[(x,y)] = 1
+            else:
+                features[(x,y)] = 0
+    return features
+    #util.raiseNotDefined()
 
     return features
 
