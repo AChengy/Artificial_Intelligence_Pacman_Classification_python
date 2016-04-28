@@ -79,17 +79,47 @@ def enhancedFeatureExtractorDigit(datum):
     features =  basicFeatureExtractorDigit(datum)
 
     "*** YOUR CODE HERE ***"
+    pixelBlocks = 0
+    #initialize the matrix array to keep track of areas visited
+    marked = [[0 for j in range(DIGIT_DATUM_HEIGHT)]for i in range(DIGIT_DATUM_WIDTH)]
     for x in range(DIGIT_DATUM_WIDTH):
         for y in range(DIGIT_DATUM_HEIGHT):
-            if datum.getPixel(x, y) > 0:
-                features[(x,y)] = 1
-            else:
-                features[(x,y)] = 0
+            #check if empty and not visited if it is go visit those
+            if (datum.getPixel(x, y) == 0 and marked[x][y]==0):
+                marked = markedChecker(datum,x ,y, marked)
+                #this will only increase past one if there are loops
+                pixelBlocks+=1
+
+    features[1]=0
+    features[2]=0
+    features[3]=0
+    features[pixelBlocks]=1
+
     return features
+
     #util.raiseNotDefined()
 
-    return features
 
+def markedChecker(datum, x, y, marked):
+    #mark that we have no gone and looked at this location
+    marked[x][y]=1
+    #list to hold all the areas around the place we just visited
+    next = []
+    #populate the list of all the areas around
+    if(x !=0):
+        next.append((x-1,y))
+    if(x != DIGIT_DATUM_HEIGHT-1):
+        next.append((x+1,y))
+    if(y != 0):
+        next.append((x,y-1))
+    if(y != DIGIT_DATUM_HEIGHT - 1):
+        next.append((x, y+1))
+    #go and visit all the areas around the first one
+    for(px, py) in next:
+        if(datum.getPixel(px,py) == 0 and marked[px][py] == 0):
+            #recursively call to revisit all the points around
+            marked = markedChecker(datum, px, py, marked)
+    return marked
 
 
 def basicFeatureExtractorPacman(state):
@@ -132,7 +162,32 @@ def enhancedPacmanFeatures(state, action):
     """
     features = util.Counter()
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    #get the state
+    state = state.generateSuccessor(0, action)
+    #get pacman location
+    pacmanLoc = state.getPacmanPosition()
+
+    #setup a feature that accounts for number of food left
+    features['numFoodLeft'] = state.getNumFood()
+
+    #setup a feature that takes into account the closest food to the current pacman lco
+    foodLocs = state.getFood().asList()
+    closestFoodDist = 0
+    if foodLocs:
+        #find closest remaining food
+        closestFoodDist = min([util.manhattanDistance(pacmanLoc, food)for food in foodLocs])
+    features['closestFoodDist'] = closestFoodDist
+
+    #setup a feature that tracks the closest ghost to pacman
+    ghostLocs = state.getGhostPositions()
+    closestGhostDist = 0
+    if ghostLocs:
+        closestGhostDist = min(util.manhattanDistance(ghost, pacmanLoc)for ghost in ghostLocs)
+    features['closestGhostDist'] = closestGhostDist
+
+
+
+    #util.raiseNotDefined()
     return features
 
 
